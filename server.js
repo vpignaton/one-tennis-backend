@@ -10,16 +10,14 @@ const doc = new GoogleSpreadsheet("1YGOwos_TbFLa1JmdlT4lkKRc6bvcRlimmcBWtjsLPFk"
 
 app.get("/", async (req, res) => {
     try {
-        // Authenticate with Google Sheets
-        await doc.auth.loadInfo({
-    credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    }
-});
+        // Authenticate with Google Sheets using service account credentials
+        await doc.useServiceAccountAuth({
+            client_email: process.env.GOOGLE_CLIENT_EMAIL,
+            private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        });
 
         await doc.loadInfo(); // Load document properties and worksheets
-        res.send("Connected to Google Sheets!");
+        res.send(`Connected to Google Sheets: ${doc.title}`);
     } catch (error) {
         console.error("Error connecting to Google Sheets:", error);
         res.status(500).send("Failed to connect to Google Sheets");
