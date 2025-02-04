@@ -18,7 +18,7 @@ app.get("/", async (req, res) => {
             scopes: ["https://www.googleapis.com/auth/spreadsheets"]
         });
 
-        await doc.useAuth(auth); // ✅ Final Fix
+        await doc.useServiceAccountAuth(auth); // ✅ FINAL FIX - This is the correct method
         await doc.loadInfo(); // Load document properties and worksheets
 
         res.send(`Connected to Google Sheets: ${doc.title}`);
