@@ -1,5 +1,6 @@
 const express = require("express");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
+const { JWT } = require("google-auth-library"); // ✅ New authentication method
 require("dotenv").config();
 
 const app = express();
@@ -10,12 +11,14 @@ const doc = new GoogleSpreadsheet("1YGOwos_TbFLa1JmdlT4lkKRc6bvcRlimmcBWtjsLPFk"
 
 app.get("/", async (req, res) => {
     try {
-        // Authenticate with Google Sheets using service account credentials
-        await doc.useServiceAccountAuth({
-            client_email: process.env.GOOGLE_CLIENT_EMAIL,
-            private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        // Authenticate with Google Sheets using the correct method
+        const auth = new JWT({
+            email: process.env.GOOGLE_CLIENT_EMAIL,
+            key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            scopes: ["https://www.googleapis.com/auth/spreadsheets"]
         });
 
+        await doc.useServiceAccountAuth(auth);
         await doc.loadInfo(); // Load document properties and worksheets
         res.send(`Connected to Google Sheets: ${doc.title}`);
     } catch (error) {
