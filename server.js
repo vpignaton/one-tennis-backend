@@ -13,4 +13,21 @@ app.get("/", async (req, res) => {
     try {
         // Authenticate with Google Sheets using the CORRECT method
         const auth = new JWT({
-   
+            email: process.env.GOOGLE_CLIENT_EMAIL,
+            key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+        });
+
+        await doc.useOAuth2Client(auth); // ✅ FIXED authentication method
+        await doc.loadInfo(); // Load document properties and worksheets
+
+        res.send(`Connected to Google Sheets: ${doc.title}`);
+    } catch (error) {
+        console.error("Error connecting to Google Sheets:", error);
+        res.status(500).send(`Failed to connect to Google Sheets: ${error.message}`);
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
