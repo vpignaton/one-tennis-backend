@@ -1,6 +1,6 @@
 const express = require("express");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
-const { JWT } = require("google-auth-library"); // ✅ Correct authentication
+const { JWT } = require("google-auth-library"); // ✅ Correct authentication method
 require("dotenv").config();
 
 const app = express();
@@ -11,14 +11,14 @@ const doc = new GoogleSpreadsheet("1YGOwos_TbFLa1JmdlT4lkKRc6bvcRlimmcBWtjsLPFk"
 
 app.get("/", async (req, res) => {
     try {
-        // Authenticate with Google Sheets using the CORRECT method
+        // Authenticate with Google Sheets using the correct method
         const auth = new JWT({
             email: process.env.GOOGLE_CLIENT_EMAIL,
             key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
             scopes: ["https://www.googleapis.com/auth/spreadsheets"]
         });
 
-        await doc.useOAuth2Client(auth); // ✅ FIXED authentication method
+        await doc.useServiceAccountAuth(auth); // ✅ This is the correct method
         await doc.loadInfo(); // Load document properties and worksheets
 
         res.send(`Connected to Google Sheets: ${doc.title}`);
