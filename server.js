@@ -18,8 +18,9 @@ app.get("/", async (req, res) => {
             scopes: ["https://www.googleapis.com/auth/spreadsheets"]
         });
 
-        await doc.useServiceAccountAuth(auth);
+        await doc.useServiceAccountAuth(auth); // Authenticate
         await doc.loadInfo(); // Load document properties and worksheets
+
         res.send(`Connected to Google Sheets: ${doc.title}`);
     } catch (error) {
         console.error("Error connecting to Google Sheets:", error);
